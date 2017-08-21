@@ -3,6 +3,7 @@ require "sinatra"
 require "sinatra/reloader"
 require "sinatra/json"
 require "csv"
+require "httparty"
 
 require "./db/connection"
 require "./db/model.deal"
@@ -61,6 +62,7 @@ post "/upload" do
 	json({history: DBChange.all.map, deals: Deal.all})
 end
 
-get "/env" do
-	json ENV
+get "/fetch" do
+	response = HTTParty.get("https://api.hubapi.com/deals/v1/deal/recent/modified?hapikey=#{ENV['HAPIKEY']}")
+	json response
 end

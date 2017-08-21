@@ -16,9 +16,12 @@ GEM
     backports (3.8.0)
     concurrent-ruby (1.0.5)
     dotenv (2.1.2)
+    httparty (0.15.6)
+      multi_xml (>= 0.5.2)
     i18n (0.8.1)
     minitest (5.10.1)
     multi_json (1.12.1)
+    multi_xml (0.6.0)
     mustermann (1.0.0)
     pg (0.21.0)
     rack (2.0.3)
@@ -47,6 +50,7 @@ PLATFORMS
 DEPENDENCIES
   activerecord
   dotenv
+  httparty
   pg
   sinatra
   sinatra-contrib
