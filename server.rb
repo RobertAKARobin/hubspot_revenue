@@ -5,6 +5,7 @@ require "csv"
 
 require "./db/connection"
 require "./db/model.deal"
+require "./db/model.db_change"
 
 get "/" do
 	redirect "/index.html"
@@ -16,6 +17,7 @@ end
 
 get "/delete" do
 	Deal.delete_all
+	DBChange.delete_all
 	json Deal.all
 end
 
@@ -53,6 +55,7 @@ post "/upload" do
 			end
 		end
 	end
+	DBChange.create({change_type: "upload_csv", num_updated: num_updated, num_created: num_created})
 
-	json({updated: num_updated, created: num_created, deals: Deal.all})
+	json({history: DBChange.all.map, deals: Deal.all})
 end
