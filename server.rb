@@ -1,3 +1,4 @@
+require "dotenv/load"
 require "sinatra"
 require "sinatra/reloader"
 require "sinatra/json"
@@ -58,4 +59,8 @@ post "/upload" do
 	DBChange.create({change_type: "upload_csv", num_updated: num_updated, num_created: num_created})
 
 	json({history: DBChange.all.map, deals: Deal.all})
+end
+
+get "/env" do
+	json ENV
 end
