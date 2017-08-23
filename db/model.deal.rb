@@ -1,4 +1,4 @@
 class Deal < ActiveRecord::Base
-	self.primary_key = "deal_id"
+	self.primary_key = "dealId"
 
 end
