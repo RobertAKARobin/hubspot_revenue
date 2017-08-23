@@ -1,0 +1,36 @@
+datatype	csv_column	api_property	API Properties Indirect	API Other
+float	Amount	amount
+string	Associated Company			associatedCompanyIds
+	Associated Contacts
+datetime	Close Date	closedate
+	Closed Lost Reason
+text	Closed Won Reason	closed_won_reason
+datetime	Create Date	createdate
+text	Deal Description	description
+bigint	Deal ID			dealId
+string	Deal Name	dealname
+string	Deal Stage	dealstage
+	Deal Type
+string	ESO Folder	eso_folder
+string	Forecast Category	forecast_category
+string	HubSpot Owner		hubspot_owner_id
+string	HubSpot Team		hubspot_team_id
+	Last Activity Date			
+	Last Modified Date
+	Last Salesforce Sync Time
+string	Lead Source Category	lead_source_category
+	Number of Contacts
+	Original Source Data 1
+	Original Source Data 2
+	Original Source Type
+	Owner Assigned Date
+boolean	Parking Lot	parking_lot
+string	Pipeline	pipeline
+string	Practice Labels	practice_labels
+integer	Probability (%)	probability_
+string	Project Manager	project_manager
+string	Reason Lost	reason_lost
+string	Salesforce Opportunity ID	hs_salesforceopportunityid
+string	Solutions Architect	solutions_architect
+string	Specific Lead Source	specific_lead_source
+string	Timeline	timeline
