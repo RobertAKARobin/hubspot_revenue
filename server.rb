@@ -1,6 +1,6 @@
 require "dotenv/load"
 require "sinatra"
-require "sinatra/reloader"
+require "sinatra/reloader" if development?
 require "sinatra/json"
 require "csv"
 require "httparty"
@@ -8,6 +8,10 @@ require "httparty"
 require "./db/connection"
 require "./db/model.deal"
 require "./db/model.db_change"
+
+configure :development do |config|
+  config.also_reload "./db/model.*.rb"
+end
 
 get "/" do
 	redirect "/index.html"
