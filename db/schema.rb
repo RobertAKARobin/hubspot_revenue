@@ -7,7 +7,6 @@ ActiveRecord::Schema.define do
 		DBChange.mapping[:all].each do |property|
 			t.send(property[:datatype], property[:apiname])
 		end
-		t.timestamps
 	end
 
 	create_table "db_changes", force: true do |t|
