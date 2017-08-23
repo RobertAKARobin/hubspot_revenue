@@ -1,3 +1,5 @@
+require "csv"
+
 class DBChange < ActiveRecord::Base
 
 	@@mapping = nil
@@ -13,12 +15,13 @@ class DBChange < ActiveRecord::Base
 	def self.refresh_mapping
 		csv = CSV.read("./db/mapping.csv", {col_sep: "\t"})
 		hashkeys = csv.shift
-		mapping = {csvname: {}, varname: {}}
+		mapping = {by_csvname: {}, by_apiname: {}, all: []}
 		csv.each do |line|
 			next unless line[0] && line[1] && line[2]
-			entry = {datatype: line[0], csvname: line[1], varname: line[2]}
-			mapping[:csvname][line[1]] = entry
-			mapping[:varname][line[1]] = entry
+			entry = {datatype: line[0], csvname: line[1], apiname: line[2]}
+			mapping[:by_csvname][line[1]] = entry
+			mapping[:by_apiname][line[1]] = entry
+			mapping[:all].push(entry)
 		end
 		return mapping
 	end

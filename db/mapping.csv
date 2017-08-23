@@ -1,4 +1,5 @@
 datatype	csv_column	api_property	API Properties Indirect	API Other
+primary_key	Deal ID	dealId
 float	Amount	amount
 string	Associated Company			associatedCompanyIds
 	Associated Contacts
@@ -15,7 +16,7 @@ string	ESO Folder	eso_folder
 string	Forecast Category	forecast_category
 string	HubSpot Owner		hubspot_owner_id
 string	HubSpot Team		hubspot_team_id
-	Last Activity Date			
+	Last Activity Date
 	Last Modified Date
 	Last Salesforce Sync Time
 string	Lead Source Category	lead_source_category
