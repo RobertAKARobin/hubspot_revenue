@@ -17,14 +17,14 @@ string	Forecast Category	forecast_category
 string	HubSpot Owner		hubspot_owner_id
 string	HubSpot Team		hubspot_team_id
 	Last Activity Date
-	Last Modified Date
+datetime	Last Modified Date	hs_lastmodifieddate
 	Last Salesforce Sync Time
 string	Lead Source Category	lead_source_category
-	Number of Contacts
+integer	Number of Contacts	num_associated_contacts
 	Original Source Data 1
 	Original Source Data 2
 	Original Source Type
-	Owner Assigned Date
+datetime	Owner Assigned Date	hubspot_owner_assigneddate
 boolean	Parking Lot	parking_lot
 string	Pipeline	pipeline
 string	Practice Labels	practice_labels
@@ -34,4 +34,4 @@ string	Reason Lost	reason_lost
 string	Salesforce Opportunity ID	hs_salesforceopportunityid
 string	Solutions Architect	solutions_architect
 string	Specific Lead Source	specific_lead_source
-string	Timeline	timeline
+string	Timeline	timeline		
