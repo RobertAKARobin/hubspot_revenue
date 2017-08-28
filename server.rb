@@ -66,6 +66,7 @@ post "/upload" do
 end
 
 get "/fetch" do
-	response = HTTParty.get("https://api.hubapi.com/deals/v1/deal/recent/modified?hapikey=#{ENV['HAPIKEY']}")
+	since_time = Deal.maximum("hs_lastmodifieddate").to_i * 1000
+	response = HTTParty.get("https://api.hubapi.com/deals/v1/deal/recent/modified?since=#{since_time}&hapikey=#{ENV['HAPIKEY']}")
 	json response
 end
