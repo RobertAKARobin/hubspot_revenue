@@ -1,37 +1,29 @@
-datatype	csv_column	api_property	API Properties Indirect	API Other
-primary_key	Deal ID	dealId
-float	Amount	amount
-string	Associated Company			associatedCompanyIds
-	Associated Contacts
-datetime	Close Date	closedate
-	Closed Lost Reason
-text	Closed Won Reason	closed_won_reason
-datetime	Create Date	createdate
-text	Deal Description	description
-bigint	Deal ID			dealId
-string	Deal Name	dealname
-string	Deal Stage	dealstage
-	Deal Type
-string	ESO Folder	eso_folder
-string	Forecast Category	forecast_category
-string	HubSpot Owner		hubspot_owner_id
-string	HubSpot Team		hubspot_team_id
-	Last Activity Date
-datetime	Last Modified Date	hs_lastmodifieddate
-	Last Salesforce Sync Time
-string	Lead Source Category	lead_source_category
-integer	Number of Contacts	num_associated_contacts
-	Original Source Data 1
-	Original Source Data 2
-	Original Source Type
-datetime	Owner Assigned Date	hubspot_owner_assigneddate
-boolean	Parking Lot	parking_lot
-string	Pipeline	pipeline
-string	Practice Labels	practice_labels
-integer	Probability (%)	probability_
-string	Project Manager	project_manager
-string	Reason Lost	reason_lost
-string	Salesforce Opportunity ID	hs_salesforceopportunityid
-string	Solutions Architect	solutions_architect
-string	Specific Lead Source	specific_lead_source
-string	Timeline	timeline		
+datatype	api_property	api_association_individual	api_association_group	api_root
+primary_key	dealId			
+float	amount			
+string			associatedCompanyIds	
+datetime	closedate			
+text	closed_won_reason			
+datetime	createdate			
+text	description			
+bigint				dealId
+string	dealname			
+string	dealstage			
+string	eso_folder			
+string	forecast_category			
+string		hubspot_owner_id		
+string		hubspot_team_id		
+datetime	hs_lastmodifieddate			
+string	lead_source_category			
+integer	num_associated_contacts			
+datetime	hubspot_owner_assigneddate			
+boolean	parking_lot			
+string	pipeline			
+string	practice_labels			
+integer	probability_			
+string	project_manager			
+string	reason_lost			
+string	hs_salesforceopportunityid			
+string	solutions_architect			
+string	specific_lead_source			
+string	timeline			

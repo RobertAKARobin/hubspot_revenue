@@ -27,6 +27,10 @@ get "/delete" do
 	json Deal.all
 end
 
+get "/mapping" do
+	json(DBChange.refresh_mapping)
+end
+
 get "/refresh" do
 	since_time = Deal.maximum("hs_lastmodifieddate").to_i * 1000
 	output = {success: false}
