@@ -31,6 +31,23 @@ get "/mapping" do
 	json(DBChange.refresh_mapping)
 end
 
+get "/timer" do
+	content_type "text/event-stream"
+	puts "NEW TIMER"
+	stream do |out|
+		counter = 0
+		delay = 0.1
+		loop do
+			counter += 10
+			out << "data: #{counter}\n\n"
+			sleep delay
+			break if counter >= 100
+		end
+		out << "data: CLOSE\n\n"
+		out.close
+	end
+end
+
 get "/refresh" do
 	since_time = Deal.maximum("hs_lastmodifieddate").to_i * 1000
 	output = {success: false}

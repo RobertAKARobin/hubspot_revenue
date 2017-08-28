@@ -5,6 +5,42 @@
 	var Component = (function(){
 		var message;
 
+		var events = {};
+		events.refresh = function(){
+			var stream = new EventSource('/timer');
+			stream.onmessage = function(response){
+				if(response.data == 'CLOSE'){
+					models.loading.inProgress = false;
+					stream.close();
+				}else{
+					models.loading.inProgress = true;
+					models.loading.status = response.data;
+				}
+				m.redraw();
+			}
+		}
+
+		var views = {};
+		views.loadingButton = function(){
+			var attrs = {};
+			var content = '';
+			if(models.loading.inProgress){
+				attrs.onclick = null;
+				content = models.loading.status + '%';
+			}else{
+				attrs.href = '#';
+				attrs.onclick = events.refresh;
+				content = 'Refresh';
+			}
+			return m('a', attrs, content);
+		}
+
+		var models = {};
+		models.loading = {
+			status: 0,
+			inProgress: false
+		}
+
 		return {
 			oninit: function(){
 				m.request({
@@ -18,7 +54,10 @@
 				});
 			},
 			view: function(){
-				return m('h1', 'The API says: ' + message);
+				return [
+					m('h1', 'The API says: ' + message),
+					views.loadingButton()
+				]
 			}
 		}
 	})();
