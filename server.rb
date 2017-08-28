@@ -27,45 +27,40 @@ get "/delete" do
 	json Deal.all
 end
 
-get "/mapping" do
-	json(DBChange.refresh_mapping)
-end
-
-get "/timer" do
-	content_type "text/event-stream"
-	puts "NEW TIMER"
-	stream do |out|
-		counter = 0
-		delay = 0.1
-		loop do
-			counter += 10
-			out << "data: #{counter}\n\n"
-			sleep delay
-			break if counter >= 100
-		end
-		out << "data: CLOSE\n\n"
-		out.close
-	end
-end
-
 get "/refresh" do
-	since_time = Deal.maximum("hs_lastmodifieddate").to_i * 1000
-	output = {success: false}
-	offset = 0
-	starttime = Time.now
-	loop do
-		response = HTTParty.get("https://api.hubapi.com/deals/v1/deal/recent/modified", {
-			query: {
-				since: since_time,
-				count: 100,
-				hapikey: ENV['HAPIKEY'],
-				offset: offset
-			}
-		})
-		break unless response['hasMore']
-		break if response.code >= 400
-		offset = response['offset']
+	content_type "text/event-stream"
+	stream do |out|
+		# since_time = Deal.maximum("hs_lastmodifieddate").to_i * 1000
+		since_time = (Time.now.to_i - 6000) * 1000
+		offset = 0
+		begin
+			loop do
+				response = HTTParty.get("https://api.hubapi.com/deals/v1/deal/recent/modified", {
+					query: {
+						since: since_time,
+						count: 10,
+						hapikey: ENV['HAPIKEY'],
+						offset: offset
+					}
+				})
+				fail 'Bad request; try again' if response.code >= 400
+				offset = response['offset']
+				out << "data: #{JSON.generate({
+					success: true,
+					offset: response['offset'],
+					total: response['total']
+				})}\n\n"
+				break unless response['hasMore']
+			end
+		rescue StandardError => message
+			status 400
+			out << "data: #{JSON.generate({
+				success: false,
+				message: message
+			})}\n\n"
+		ensure
+			out << "data: CLOSE\n\n"
+			out.close
+		end
 	end
-	timediff = (Time.now - starttime)
-	json({success: true, time: timediff})
 end

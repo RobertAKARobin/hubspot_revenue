@@ -5,39 +5,53 @@
 	var Component = (function(){
 		var message;
 
+		var socket = Socket.new();
+		socket.onstart = function(){
+			models.loading.inProgress = true;
+			models.loading.progress = '0';
+			m.redraw();
+		}
+		socket.onmessage = function(response){
+			models.loading.progress = Math.round((response.offset * 100) / response.total);
+			m.redraw();
+		}
+		socket.onerror = function(error){
+			models.loading.progress = false;
+			models.loading.error = error.message;
+			m.redraw();
+		}
+		socket.onclose = function(){
+			models.loading.inProgress = false;
+			m.redraw();
+		}
+
 		var events = {};
 		events.refresh = function(){
-			var stream = new EventSource('/timer');
-			stream.onmessage = function(response){
-				if(response.data == 'CLOSE'){
-					models.loading.inProgress = false;
-					stream.close();
-				}else{
-					models.loading.inProgress = true;
-					models.loading.status = response.data;
-				}
-				m.redraw();
-			}
+			socket.send('/refresh');
 		}
 
 		var views = {};
 		views.loadingButton = function(){
 			var attrs = {};
-			var content = '';
+			var progress = (models.loading.progress ? models.loading.progress + '%' : '');
+			var message = (models.loading.inProgress ? 'Loading...' : (models.loading.error || ''));
+
 			if(models.loading.inProgress){
 				attrs.onclick = null;
-				content = models.loading.status + '%';
 			}else{
 				attrs.href = '#';
 				attrs.onclick = events.refresh;
-				content = 'Refresh';
 			}
-			return m('a', attrs, content);
+			return m('p', [
+				m('a', attrs, 'Refresh'),
+				m('span', (' ' + progress + ' ' + message))
+			]);
 		}
 
 		var models = {};
 		models.loading = {
-			status: 0,
+			error: '',
+			progress: 0,
 			inProgress: false
 		}
 
