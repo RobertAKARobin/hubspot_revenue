@@ -23,6 +23,9 @@
 				}
 				socket.onclose = function(){
 					models.loading.inProgress = false;
+					if(!socket.hasErrors){
+						DealsList.triggers.loadDeals();
+					}
 					m.redraw();
 				}
 				return socket

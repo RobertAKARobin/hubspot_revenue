@@ -15,6 +15,7 @@ var Socket = (function(){
 	}
 	$Instance.send = function(url){
 		var socket = this;
+		socket.hasErrors = false;
 		socket.url = url;
 		socket.eventSource = new EventSource(url);
 		socket.eventSource.onmessage = socket.handleMessage.bind(socket);
@@ -42,6 +43,7 @@ var Socket = (function(){
 	}
 	$Instance.handleError = function(error){
 		var socket = this;
+		socket.hasErrors = true;
 		if(socket.onerror){
 			socket.onerror(error);
 		}
