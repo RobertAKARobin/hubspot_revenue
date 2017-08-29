@@ -31,7 +31,7 @@ get "/delete" do
 end
 
 get "/deals/all" do
-	json({success: true, deals: Deal.first(5)})
+	json({success: true, deals: Deal.order(hs_lastmodifieddate: :desc).first(5)})
 end
 
 get "/refreshes/all" do
@@ -41,7 +41,7 @@ end
 get "/refresh" do
 	content_type "text/event-stream"
 	refresh_info = {
-		since_time: Refresh.maximum("created_at"),
+		since_time: Refresh.maximum("created_at").to_i,
 		num_created: 0,
 		num_updated: 0
 	}
@@ -50,7 +50,7 @@ get "/refresh" do
 		begin
 			loop do
 				response = Deal.API_get_recently_modified({
-					since: (refresh_info[:since_time] || 0).to_i * 1000,
+					since: (refresh_info[:since_time] || 0) * 1000,
 					count: 100,
 					offset: offset
 				})

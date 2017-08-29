@@ -10,7 +10,7 @@ ActiveRecord::Schema.define do
 	end
 
 	create_table "refreshes", force: true do |t|
-		t.datetime "since_time"
+		t.bigint "since_time"
 		t.integer "num_created"
 		t.integer "num_updated"
 		t.timestamps

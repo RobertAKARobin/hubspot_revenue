@@ -79,16 +79,20 @@
 			triggers: triggers,
 			view: function(){
 				return [
-					m('p', 'Deals:'),
+					m('h2', 'Deals:'),
 					m('table', [
 						m('tr', [
+							m('th', 'Last modified'),
 							m('th', 'ID'),
-							m('th', 'Name')
+							m('th', 'Name'),
+							m('th', 'Probability')
 						]),
 						models.list.map(function(deal){
 							return m('tr', [
+								m('td', new Date(deal.hs_lastmodifieddate).toString()),
 								m('td', deal.dealId),
-								m('td', deal.dealname)
+								m('td', deal.dealname),
+								m('td', deal.probability_)
 							]);
 						})
 					])
