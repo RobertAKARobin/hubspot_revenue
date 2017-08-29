@@ -27,7 +27,7 @@ class Deal < ActiveRecord::Base
 
 	def self.API_get_recently_modified(query = {})
 		query[:hapikey] ||= ENV['HAPIKEY']
-		query[:count] ||= 10
+		query[:count] ||= 100
 		query[:since] ||= (Time.now.to_i - 6000) * 1000
 		query[:offset] ||= 0
 		return HTTParty.get("https://api.hubapi.com/deals/v1/deal/recent/modified", {query: query})
