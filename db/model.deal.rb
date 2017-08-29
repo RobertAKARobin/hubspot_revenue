@@ -27,7 +27,7 @@ class Deal < ActiveRecord::Base
 
 	def self.API_get_recently_modified(query = {})
 		query[:hapikey] ||= ENV['HAPIKEY']
-		query[:count] ||= 1
+		query[:count] ||= 10
 		query[:since] ||= (Time.now.to_i - 6000) * 1000
 		query[:offset] ||= 0
 		return HTTParty.get("https://api.hubapi.com/deals/v1/deal/recent/modified", {query: query})
@@ -36,18 +36,29 @@ class Deal < ActiveRecord::Base
 	def self.create_from_API_records api_records
 		api_records = [api_records] unless api_records.is_a? Array
 		accepted_attributes = Deal.attribute_names
-		mapped_records = []
+		results = {
+			created_ids: [],
+			updated_ids: []
+		}
 		api_records.each do |api_record|
-			mapped_record = {}
-			mapped_record["dealId"] = api_record["dealId"]
+			mapped_record = {
+				dealId: api_record["dealId"]
+			}
 			api_record["properties"].each do |property_name, property_info|
 				if accepted_attributes.include? property_name
 					mapped_record[property_name] = property_info["value"]
 				end
 			end
-			mapped_records.push(mapped_record)
+			begin
+				deal = Deal.create(mapped_record)
+				results[:created_ids].push(deal[:dealId])
+			rescue ActiveRecord::RecordNotUnique
+				deal = Deal.find(mapped_record[:dealId])
+				deal.update(mapped_record)
+				results[:updated_ids].push(deal[:dealId])
+			end
 		end
-		Deal.create(mapped_records)
+		return results
 	end
 
 end

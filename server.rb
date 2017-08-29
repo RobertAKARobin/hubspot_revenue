@@ -36,7 +36,7 @@ end
 get "/refresh" do
 	response = Deal.API_get_recently_modified
 	records = Deal.create_from_API_records(response["results"])
-	json(Deal.all)
+	json(records)
 	# content_type "text/event-stream"
 	# stream do |out|
 	# 	# since_time = Deal.maximum("hs_lastmodifieddate").to_i * 1000
