@@ -128,18 +128,25 @@
 				m('tr', [
 					m('th', ''),
 					m('th', 'Last modified'),
+					m('th', 'Created'),
 					m('th', 'ID'),
 					m('th', 'Name'),
 					m('th', 'Probability'),
+					m('th', 'Amount'),
+					m('th', 'Close date'),
 					m('th', 'Timeline')
 				]),
 				models.list.map(function(deal, index){
+					console.log(deal)
 					return m('tr', [
 						m('th', (index + 1)),
 						m('td', views.date(deal.hs_lastmodifieddate)),
+						m('td', views.date(deal.createdate)),
 						m('td', deal.dealId),
 						m('td', deal.dealname),
 						m('td', deal.probability_),
+						m('td', '$' + parseFloat(deal.amount).toFixed(2)),
+						m('td', views.date(deal.closedate)),
 						m('td', [
 							m('input', {
 								value: deal.timeline,
