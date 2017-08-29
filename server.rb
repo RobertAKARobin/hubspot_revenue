@@ -31,7 +31,7 @@ get "/delete" do
 end
 
 get "/deals/all" do
-	json({success: true, deals: Deal.order(hs_lastmodifieddate: :desc).first(5)})
+	json({success: true, deals: Deal.order(hs_lastmodifieddate: :desc)})
 end
 
 get "/refreshes/all" do

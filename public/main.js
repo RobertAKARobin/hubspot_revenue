@@ -68,37 +68,47 @@
 
 		var triggers = {};
 		triggers.loadDeals = function(){
+			models.isLoading = true;
 			m.request({
 				url: '/deals/all'
 			}).then(function(response){
 				models.list = response.deals;
+				models.isLoading = false;
 			});
 		}
 
 		var models = {};
 		models.list = [];
+		models.isLoading = false;
+
+		var views = {};
+		views.list = function(){
+			return m('table', [
+				m('tr', [
+					m('th', ''),
+					m('th', 'Last modified'),
+					m('th', 'ID'),
+					m('th', 'Name'),
+					m('th', 'Probability')
+				]),
+				models.list.map(function(deal, index){
+					return m('tr', [
+						m('th', (index + 1)),
+						m('td', new Date(deal.hs_lastmodifieddate).toString()),
+						m('td', deal.dealId),
+						m('td', deal.dealname),
+						m('td', deal.probability_)
+					]);
+				})
+			]);
+		}
 
 		return {
 			triggers: triggers,
 			view: function(){
 				return [
 					m('h2', 'Deals:'),
-					m('table', [
-						m('tr', [
-							m('th', 'Last modified'),
-							m('th', 'ID'),
-							m('th', 'Name'),
-							m('th', 'Probability')
-						]),
-						models.list.map(function(deal){
-							return m('tr', [
-								m('td', new Date(deal.hs_lastmodifieddate).toString()),
-								m('td', deal.dealId),
-								m('td', deal.dealname),
-								m('td', deal.probability_)
-							]);
-						})
-					])
+					(models.isLoading = true && models.list.length == 0 ? 'Loading...' : views.list())
 				];
 			}
 		}
