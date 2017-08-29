@@ -3,7 +3,7 @@
 (function(){
 
 	var LoadingButton = (function(){
-		
+
 		var sockets = {
 			refresh: (function(){
 				var socket = Socket.new();
@@ -61,7 +61,46 @@
 		}
 	})();
 
+	var DealsList = (function(){
+
+		var triggers = {};
+		triggers.loadDeals = function(){
+			m.request({
+				url: '/deals/all'
+			}).then(function(response){
+				models.list = response.deals;
+			});
+		}
+
+		var models = {};
+		models.list = [];
+
+		return {
+			triggers: triggers,
+			view: function(){
+				return [
+					m('p', 'Deals:'),
+					m('table', [
+						m('tr', [
+							m('th', 'ID'),
+							m('th', 'Name')
+						]),
+						models.list.map(function(deal){
+							return m('tr', [
+								m('td', deal.dealId),
+								m('td', deal.dealname)
+							]);
+						})
+					])
+				];
+			}
+		}
+
+	})();
+
 	document.addEventListener('DOMContentLoaded', function(){
 		m.mount(document.getElementById('loading'), LoadingButton);
+		m.mount(document.getElementById('deals'), DealsList);
+		DealsList.triggers.loadDeals();
 	});
 })();

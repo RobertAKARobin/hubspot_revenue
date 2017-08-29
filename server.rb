@@ -31,7 +31,7 @@ get "/delete" do
 end
 
 get "/deals/all" do
-	json(Deal.all)
+	json({success: true, deals: Deal.first(5)})
 end
 
 get "/refreshes/all" do
