@@ -7,6 +7,7 @@ require "date"
 require "./db/connection"
 require "./db/model.deal"
 require "./db/model.refresh"
+require "./db/model.revchunk"
 
 configure :development do |config|
 	config.also_reload "./db/model.*.rb"

@@ -4,6 +4,7 @@ require "httparty"
 class Deal < ActiveRecord::Base
 	@@mapping = nil
 	self.primary_key = "dealId"
+	has_many :revchunks
 	
 	def self.mapping
 		unless @@mapping

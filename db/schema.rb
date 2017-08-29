@@ -9,6 +9,13 @@ ActiveRecord::Schema.define do
 		end
 	end
 
+	create_table "revchunk", force: true do |t|
+		t.bigint "month_unix"
+		t.references "deal", index: true
+		t.integer "amount"
+		t.timestamps
+	end
+
 	create_table "refreshes", force: true do |t|
 		t.bigint "since_time"
 		t.integer "num_created"

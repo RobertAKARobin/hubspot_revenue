@@ -90,7 +90,6 @@
 					timeline: newTimeline
 				}
 			}).then(function(response){
-				console.log(response)
 				if(response.success){
 					deal.timeline = newTimeline;
 					event.target.classList.add('success');
