@@ -107,6 +107,23 @@
 		models.targetDeal = null;
 
 		var views = {};
+		views.date = function(input){
+			var dateObject = new Date(input)
+			var dateString = dateObject.toISOString().split('T')[0].substring(2);
+			return m('span', {
+				timestamp: dateObject.getTime(),
+				title: dateObject.toLocaleString('fullwide', {
+					weekday: 'short',
+					year: 'numeric',
+					month: 'short',
+					day: '2-digit',
+					hour: '2-digit',
+					minute: '2-digit',
+					timeZoneName: 'short'
+				})
+			}, dateString);
+
+		}
 		views.list = function(){
 			return m('table', [
 				m('tr', [
@@ -120,7 +137,7 @@
 				models.list.map(function(deal, index){
 					return m('tr', [
 						m('th', (index + 1)),
-						m('td', new Date(deal.hs_lastmodifieddate).toString()),
+						m('td', views.date(deal.hs_lastmodifieddate)),
 						m('td', deal.dealId),
 						m('td', deal.dealname),
 						m('td', deal.probability_),
