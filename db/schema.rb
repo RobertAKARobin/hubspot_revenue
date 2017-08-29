@@ -1,10 +1,10 @@
 require "./db/connection"
-require "./db/model.db_change.rb"
+require "./db/model.deal.rb"
 
 ActiveRecord::Schema.define do
 
 	create_table "deals", force: true, id: false do |t|
-		DBChange.mapping[:all].each do |property|
+		Deal.mapping[:all].each do |property|
 			t.send(property[:datatype], property[:apiname])
 		end
 	end

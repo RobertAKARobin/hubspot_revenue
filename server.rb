@@ -2,8 +2,6 @@ require "dotenv/load"
 require "sinatra"
 require "sinatra/reloader" if development?
 require "sinatra/json"
-require "csv"
-require "httparty"
 
 require "./db/connection"
 require "./db/model.deal"
@@ -27,40 +25,43 @@ get "/delete" do
 	json Deal.all
 end
 
+get "/all" do
+	json(Deal.all)
+end
+
 get "/refresh" do
-	content_type "text/event-stream"
-	stream do |out|
-		# since_time = Deal.maximum("hs_lastmodifieddate").to_i * 1000
-		since_time = (Time.now.to_i - 6000) * 1000
-		offset = 0
-		begin
-			loop do
-				response = HTTParty.get("https://api.hubapi.com/deals/v1/deal/recent/modified", {
-					query: {
-						since: since_time,
-						count: 10,
-						hapikey: ENV['HAPIKEY'],
-						offset: offset
-					}
-				})
-				fail 'Bad request; try again' if response.code >= 400
-				offset = response['offset']
-				out << "data: #{JSON.generate({
-					success: true,
-					offset: response['offset'],
-					total: response['total']
-				})}\n\n"
-				break unless response['hasMore']
-			end
-		rescue StandardError => message
-			status 400
-			out << "data: #{JSON.generate({
-				success: false,
-				message: message
-			})}\n\n"
-		ensure
-			out << "data: CLOSE\n\n"
-			out.close
-		end
+	out = []
+	response = Deal.API_get_recently_modified
+	response["results"].each do |api_record|
+		Deal.create_from_api(api_record)
 	end
+	json(Deal.all)
+	# content_type "text/event-stream"
+	# stream do |out|
+	# 	# since_time = Deal.maximum("hs_lastmodifieddate").to_i * 1000
+	# 	since_time = (Time.now.to_i - 6000) * 1000
+	# 	offset = 0
+	# 	begin
+	# 		loop do
+	# 			response = Deal.API_get_recently_modified
+	# 			fail 'Bad request; try again' if response.code >= 400
+	# 			offset = response['offset']
+	# 			out << "data: #{JSON.generate({
+	# 				success: true,
+	# 				offset: response['offset'],
+	# 				total: response['total']
+	# 			})}\n\n"
+	# 			break unless response['hasMore']
+	# 		end
+	# 	rescue StandardError => message
+	# 		status 400
+	# 		out << "data: #{JSON.generate({
+	# 			success: false,
+	# 			message: message
+	# 		})}\n\n"
+	# 	ensure
+	# 		out << "data: CLOSE\n\n"
+	# 		out.close
+	# 	end
+	# end
 end
