@@ -8,7 +8,7 @@ require "./db/model.deal"
 require "./db/model.db_change"
 
 configure :development do |config|
-  config.also_reload "./db/model.*.rb"
+	config.also_reload "./db/model.*.rb"
 end
 
 get "/" do
@@ -30,11 +30,8 @@ get "/all" do
 end
 
 get "/refresh" do
-	out = []
 	response = Deal.API_get_recently_modified
-	response["results"].each do |api_record|
-		Deal.create_from_api(api_record)
-	end
+	records = Deal.create_from_API_records(response["results"])
 	json(Deal.all)
 	# content_type "text/event-stream"
 	# stream do |out|

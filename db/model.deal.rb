@@ -33,15 +33,21 @@ class Deal < ActiveRecord::Base
 		return HTTParty.get("https://api.hubapi.com/deals/v1/deal/recent/modified", {query: query})
 	end
 
-	def self.create_from_api api_record
+	def self.create_from_API_records api_records
+		api_records = [api_records] unless api_records.is_a? Array
 		accepted_attributes = Deal.attribute_names
-		data = {}
-		data[:dealId] = api_record["dealId"]
-		api_record["properties"].each do |property_name, property_info|
-			if accepted_attributes.include? property_name
-				data[property_name] = property_info["value"]
+		mapped_records = []
+		api_records.each do |api_record|
+			mapped_record = {}
+			mapped_record["dealId"] = api_record["dealId"]
+			api_record["properties"].each do |property_name, property_info|
+				if accepted_attributes.include? property_name
+					mapped_record[property_name] = property_info["value"]
+				end
 			end
+			mapped_records.push(mapped_record)
 		end
-		Deal.create(data)
+		Deal.create(mapped_records)
 	end
+
 end
