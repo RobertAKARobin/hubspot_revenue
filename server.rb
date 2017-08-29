@@ -45,27 +45,27 @@ get "/refresh" do
 		num_created: 0,
 		num_updated: 0
 	}
+	offset = 0
 	stream do |out|
-		offset = 0
 		begin
 			loop do
 				response = Deal.API_get_recently_modified({
-					since_time: (refresh_info[:since_time] || 0).to_i * 1000,
-					count: 10,
+					since: (refresh_info[:since_time] || 0).to_i * 1000,
+					count: 100,
 					offset: offset
 				})
 				if response.code >= 400
 					fail 'Bad request; try again'
 				else
-					result = Deal.create_from_API_records(response["results"])
 					offset = response['offset']
+					results = Deal.create_from_API_records(response["results"])
 					out << "data: #{JSON.generate({
 						success: true,
 						offset: response['offset'],
 						total: response['total']
 					})}\n\n"
-					refresh_info[:num_created] += result[:created_ids].size
-					refresh_info[:num_updated] += result[:updated_ids].size
+					refresh_info[:num_created] += results[:created_ids].size
+					refresh_info[:num_updated] += results[:updated_ids].size
 					break unless response['hasMore']
 				end
 			end

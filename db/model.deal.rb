@@ -30,7 +30,8 @@ class Deal < ActiveRecord::Base
 		query[:count] ||= 100
 		query[:since] ||= (Time.now.to_i - 6000) * 1000
 		query[:offset] ||= 0
-		return HTTParty.get("https://api.hubapi.com/deals/v1/deal/recent/modified", {query: query})
+		response = HTTParty.get("https://api.hubapi.com/deals/v1/deal/recent/modified", {query: query})
+		return response
 	end
 
 	def self.create_from_API_records api_records
