@@ -10,3 +10,9 @@ th, td{
 th{
 	background-color:#ddd;
 }
+.success{
+	background-color:#cfc;
+}
+.error{
+	background-color:#fcc;
+}

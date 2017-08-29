@@ -77,9 +77,34 @@
 			});
 		}
 
+		var events = {};
+		events.updateTimeline = function(event){
+			var deal = this;
+			var newTimeline = event.target.value;
+			event.redraw = false;
+			m.request({
+				method: 'POST', 
+				url: '/deals/' + deal.dealId,
+				background: true,
+				data: {
+					timeline: newTimeline
+				}
+			}).then(function(response){
+				console.log(response)
+				if(response.success){
+					deal.timeline = newTimeline;
+					event.target.classList.add('success');
+				}else{
+					event.target.classList.add('error');
+				}
+				m.redraw();
+			});
+		}
+
 		var models = {};
 		models.list = [];
 		models.isLoading = false;
+		models.targetDeal = null;
 
 		var views = {};
 		views.list = function(){
@@ -99,7 +124,12 @@
 						m('td', deal.dealId),
 						m('td', deal.dealname),
 						m('td', deal.probability_),
-						m('td', deal.timeline)
+						m('td', [
+							m('input', {
+								value: deal.timeline,
+								onchange: events.updateTimeline.bind(deal)
+							})
+						])
 					]);
 				})
 			]);

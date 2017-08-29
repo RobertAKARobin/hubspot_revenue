@@ -31,7 +31,18 @@ get "/delete" do
 end
 
 get "/deals/all" do
-	json({success: true, deals: Deal.order(hs_lastmodifieddate: :desc)})
+	json({success: true, deals: Deal.order(hs_lastmodifieddate: :desc).first(20)})
+end
+
+post "/deals/:dealId" do
+	begin
+		deal = Deal.find(params[:dealId])
+		data = JSON.parse(request.body.read)
+		deal.update(timeline: data["timeline"])
+		json({success: true, deal: deal})
+	rescue
+		json({success: false})
+	end
 end
 
 get "/refreshes/all" do
