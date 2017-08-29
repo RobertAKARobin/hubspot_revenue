@@ -9,8 +9,8 @@ ActiveRecord::Schema.define do
 		end
 	end
 
-	create_table "db_changes", force: true do |t|
-		t.string "change_type"
+	create_table "refreshes", force: true do |t|
+		t.datetime "since_time"
 		t.integer "num_created"
 		t.integer "num_updated"
 		t.timestamps

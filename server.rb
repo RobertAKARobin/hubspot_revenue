@@ -2,10 +2,11 @@ require "dotenv/load"
 require "sinatra"
 require "sinatra/reloader" if development?
 require "sinatra/json"
+require "date"
 
 require "./db/connection"
 require "./db/model.deal"
-require "./db/model.db_change"
+require "./db/model.refresh"
 
 configure :development do |config|
 	config.also_reload "./db/model.*.rb"
@@ -25,29 +26,31 @@ end
 
 get "/delete" do
 	Deal.delete_all
-	DBChange.delete_all
+	Refresh.delete_all
 	json Deal.all
 end
 
-get "/all" do
+get "/deals/all" do
 	json(Deal.all)
+end
+
+get "/refreshes/all" do
+	json(Refresh.all)
 end
 
 get "/refresh" do
 	content_type "text/event-stream"
-	since_time = Deal.maximum("hs_lastmodifieddate").to_i * 1000
-	results = {
-		success: true,
-		since_time: since_time,
-		created_ids: [],
-		updated_ids: []
+	refresh_info = {
+		since_time: Refresh.maximum("created_at"),
+		num_created: 0,
+		num_updated: 0
 	}
 	stream do |out|
 		offset = 0
 		begin
 			loop do
 				response = Deal.API_get_recently_modified({
-					since_time: since_time,
+					since_time: (refresh_info[:since_time] || 0).to_i * 1000,
 					count: 10,
 					offset: offset
 				})
@@ -61,12 +64,15 @@ get "/refresh" do
 						offset: response['offset'],
 						total: response['total']
 					})}\n\n"
-					results[:created_ids].concat(result[:created_ids])
-					results[:updated_ids].concat(result[:updated_ids])
+					refresh_info[:num_created] += result[:created_ids].size
+					refresh_info[:num_updated] += result[:updated_ids].size
 					break unless response['hasMore']
 				end
 			end
-			out << "data: #{JSON.generate(results)}\n\n"
+			out << "data: #{JSON.generate({
+				success: true,
+				refresh_info: Refresh.create(refresh_info).as_json
+			})}\n\n"
 		rescue StandardError => message
 			status 400
 			out << "data: #{JSON.generate({
