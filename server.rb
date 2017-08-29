@@ -82,6 +82,7 @@ get "/refresh" do
 		ensure
 			out << "data: CLOSE\n\n"
 			out.close
+			ActiveRecord::Base.clear_active_connections!
 		end
 	end
 end
