@@ -3,8 +3,7 @@
 (function(){
 
 	var LoadingButton = (function(){
-		var message;
-
+		
 		var sockets = {
 			refresh: (function(){
 				var socket = Socket.new();
@@ -43,17 +42,6 @@
 		}
 
 		return {
-			oninit: function(){
-				m.request({
-					url: '/api'
-				}).then(function(response){
-					if(response.success){
-						message = response.message;
-					}else{
-						message = 'Errare humanum est.';
-					}
-				});
-			},
 			view: function(){
 				var attrs = {};
 				var progress = (models.loading.progress ? models.loading.progress + '%' : '');
