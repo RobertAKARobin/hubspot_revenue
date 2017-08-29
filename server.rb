@@ -11,6 +11,10 @@ configure :development do |config|
 	config.also_reload "./db/model.*.rb"
 end
 
+after do
+	ActiveRecord::Base.connection.close
+end
+
 get "/" do
 	redirect "/index.html"
 end
