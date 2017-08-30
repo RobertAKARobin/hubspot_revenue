@@ -31,8 +31,8 @@ get "/deals" do
 	filter = (params[:filter] || '')
 	begin
 		json({success: true, deals: Deal.where(filter).order(closedate: :desc).first(20)})
-	rescue
-		json({success: false, message: 'Your input was bad. Try again.'})
+	rescue Exception => error
+		json({success: false, message: error.message})
 	end
 end
 

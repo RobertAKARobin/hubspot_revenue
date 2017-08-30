@@ -3,6 +3,7 @@ var DealsList = (function(){
 	var triggers = {};
 	triggers.loadDeals = function(){
 		models.isLoading = true;
+		models.filter.response = '';
 		m.request({
 			url: '/deals',
 			data: {
@@ -65,7 +66,9 @@ var DealsList = (function(){
 		}
 		return [
 			m('p', form),
-			m('p', models.filter.response)
+			m('p', {
+				title: models.filter.response
+			}, (models.filter.response ? 'Your input was bad. Try again.' : ''))
 		]
 	}
 	views.list = function(){
