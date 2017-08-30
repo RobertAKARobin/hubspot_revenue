@@ -4,7 +4,7 @@ var DealsList = (function(){
 	triggers.loadDeals = function(){
 		models.isLoading = true;
 		m.request({
-			url: '/deals/all',
+			url: '/deals',
 			data: {
 				filter: models.filter.input
 			}
@@ -28,7 +28,7 @@ var DealsList = (function(){
 		var newTimeline = event.target.value;
 		event.redraw = false;
 		m.request({
-			method: 'POST', 
+			method: 'PATCH', 
 			url: '/deals/' + deal.dealId,
 			background: true,
 			data: {

@@ -21,17 +21,13 @@ get "/" do
 	redirect "/index.html"
 end
 
-get "/api" do
-	json({success: true, message: "This is from the API"})
-end
-
 get "/delete" do
 	Deal.delete_all
 	Refresh.delete_all
 	json Deal.all
 end
 
-get "/deals/all" do
+get "/deals" do
 	filter = (params[:filter] || '')
 	begin
 		json({success: true, deals: Deal.where(filter).order(closedate: :desc).first(20)})
@@ -40,7 +36,7 @@ get "/deals/all" do
 	end
 end
 
-post "/deals/:dealId" do
+patch "/deals/:dealId" do
 	begin
 		deal = Deal.find(params[:dealId])
 		data = JSON.parse(request.body.read)
@@ -51,7 +47,7 @@ post "/deals/:dealId" do
 	end
 end
 
-get "/refreshes/all" do
+get "/refreshes" do
 	json(Refresh.all)
 end
 
