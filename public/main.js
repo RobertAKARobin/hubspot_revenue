@@ -123,6 +123,13 @@
 			}, dateString);
 
 		}
+		views.filter = function(){
+			return [
+				m('input'),
+				m('input'),
+				m('button', 'Filter')
+			]
+		}
 		views.list = function(){
 			return m('table', [
 				m('tr', [
@@ -137,7 +144,6 @@
 					m('th', 'Timeline')
 				]),
 				models.list.map(function(deal, index){
-					console.log(deal)
 					return m('tr', [
 						m('th', (index + 1)),
 						m('td', views.date(deal.hs_lastmodifieddate)),
@@ -161,10 +167,19 @@
 		return {
 			triggers: triggers,
 			view: function(){
-				return [
-					m('h2', 'Deals:'),
-					(models.isLoading = true && models.list.length == 0 ? 'Loading...' : views.list())
+				var output = [
+					m('h2', 'Deals:')
 				];
+				if(!(models.isLoading)){
+					output.push(m('p', views.filter()));	
+				}
+				if(models.isLoading){
+					output.push('Loading...');
+				}
+				if(models.list.length > 0){
+					output.push(views.list());
+				}
+				return output;
 			}
 		}
 
