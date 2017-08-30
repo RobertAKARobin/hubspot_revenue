@@ -70,14 +70,25 @@
 		triggers.loadDeals = function(){
 			models.isLoading = true;
 			m.request({
-				url: '/deals/all'
+				url: '/deals/all',
+				data: {
+					filter: models.filter.input
+				}
 			}).then(function(response){
-				models.list = response.deals;
+				if(response.success){
+					models.list = response.deals;
+				}else{
+					models.filter.response = response.message;
+				}
 				models.isLoading = false;
 			});
 		}
 
 		var events = {};
+		events.loadDeals = function(event){
+			event.redraw = false;
+			triggers.loadDeals();
+		}
 		events.updateTimeline = function(event){
 			var deal = this;
 			var newTimeline = event.target.value;
@@ -104,6 +115,10 @@
 		models.list = [];
 		models.isLoading = false;
 		models.targetDeal = null;
+		models.filter = {
+			input: m.stream('closedate >= 1519884000000 AND amount > 159000'),
+			response: ''
+		}
 
 		var views = {};
 		views.date = function(input){
@@ -124,10 +139,17 @@
 
 		}
 		views.filter = function(){
+			var form = [
+				m('input', m._boundInput(models.filter.input))
+			];
+			if(!(models.isLoading)){
+				form.push(m('button', {
+					onclick: events.loadDeals
+				}, 'Filter'));
+			}
 			return [
-				m('input'),
-				m('input'),
-				m('button', 'Filter')
+				m('p', form),
+				m('p', models.filter.response)
 			]
 		}
 		views.list = function(){
@@ -168,11 +190,9 @@
 			triggers: triggers,
 			view: function(){
 				var output = [
-					m('h2', 'Deals:')
+					m('h2', 'Deals:'),
+					m('p', views.filter())
 				];
-				if(!(models.isLoading)){
-					output.push(m('p', views.filter()));	
-				}
 				if(models.isLoading){
 					output.push('Loading...');
 				}
@@ -184,6 +204,16 @@
 		}
 
 	})();
+
+	m._boundInput = function(stream, attrs){
+		var attrs = (attrs || {});
+		attrs.value = stream();
+		attrs.oninput = function(event){
+			event.redraw = false;
+			m.withAttr('value', stream).call({}, event);
+		};
+		return attrs;
+	}
 
 	document.addEventListener('DOMContentLoaded', function(){
 		m.mount(document.getElementById('loading'), LoadingButton);

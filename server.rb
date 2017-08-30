@@ -32,7 +32,12 @@ get "/delete" do
 end
 
 get "/deals/all" do
-	json({success: true, deals: Deal.order(hs_lastmodifieddate: :desc).first(20)})
+	filter = (params[:filter] || '')
+	begin
+		json({success: true, deals: Deal.where(filter).order(closedate: :desc).first(20)})
+	rescue
+		json({success: false, message: 'Your input was bad. Try again.'})
+	end
 end
 
 post "/deals/:dealId" do
