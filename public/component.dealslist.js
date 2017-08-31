@@ -5,17 +5,20 @@ Component.DealsList = (function(){
 	var triggers = {};
 	triggers.loadDeals = function(){
 		models.isLoading = true;
-		models.filter.response = '';
+		models.server_response = '';
 		m.request({
 			url: '/deals',
 			data: {
-				filter: models.filter.input
+				filter: models.filter,
+				projection_start_month: models.projection_start_month,
+				projection_start_year: models.projection_start_year,
+				projection_month_range: models.projection_month_range
 			}
 		}).then(function(response){
 			if(response.success){
 				models.list = response.deals;
 			}else{
-				models.filter.response = response.message;
+				models.server_response = response.message;
 			}
 			models.isLoading = false;
 		});
@@ -24,7 +27,7 @@ Component.DealsList = (function(){
 	var events = {};
 	events.loadDeals = function(event){
 		event.redraw = false;
-		helpers.query({filter: models.filter.input()})
+		helpers.query({filter: models.filter()})
 		triggers.loadDeals();
 	}
 	events.updateTimeline = function(event){
@@ -54,15 +57,34 @@ Component.DealsList = (function(){
 	var models = {};
 	models.list = [];
 	models.isLoading = false;
-	models.filter = {
-		input: m.stream(helpers.query().filter),
-		response: ''
-	}
+	models.filter = m.stream(helpers.query().filter);
+	models.server_response = '';
+	models.projection_start_month = m.stream((new Date()).getMonth() + 1);
+	models.projection_start_year = m.stream((new Date()).getFullYear());
+	models.projection_month_range = m.stream(1);
 
 	var views = {};
 	views.filter = function(){
 		var form = [
-			m('input', m._boundInput(models.filter.input))
+			m('span', 'Projections starting '),
+			m('input', m._boundInput(models.projection_start_year, {
+				type: 'number',
+				min: 2010,
+				max: 2030
+			})),
+			m('span', ' - '),
+			m('input', m._boundInput(models.projection_start_month, {
+				type: 'number',
+				min: 1,
+				max: 12
+			})),
+			m('span', ' and out '),
+			m('input', m._boundInput(models.projection_month_range, {
+				type: 'number',
+				min: 1,
+				max: 12
+			})),
+			m('span', ' months')
 		];
 		if(!(models.isLoading)){
 			form.push(m('button', {
@@ -72,16 +94,14 @@ Component.DealsList = (function(){
 		return [
 			m('p', form),
 			m('p', {
-				title: models.filter.response
-			}, (models.filter.response ? 'Your input was bad. Try again.' : ''))
+				title: models.server_response
+			}, (models.server_response ? 'Your input was bad. Try again.' : ''))
 		]
 	}
 	views.headerRow = function(){
 		return m('tr', [
 			m('th', ''),
-			m('th', 'Last modified'),
 			m('th', 'Created'),
-			m('th', 'ID'),
 			m('th', 'Name'),
 			m('th', 'Probability'),
 			m('th', 'Amount'),
@@ -93,12 +113,10 @@ Component.DealsList = (function(){
 	views.bodyRow = function(deal, index){
 		return m('tr', [
 			m('th', (index + 1)),
-			m('td', helpers.date(deal.hs_lastmodifieddate)),
 			m('td', helpers.date(deal.createdate)),
-			m('td', deal.dealId),
 			m('td', deal.dealname),
 			m('td', deal.probability_),
-			m('td', '$' + parseFloat(deal.amount).toFixed(2)),
+			m('td', '$'+ deal.amount),
 			m('td', helpers.date(deal.closedate)),
 			m('td', [
 				m('input', {

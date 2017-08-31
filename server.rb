@@ -28,9 +28,21 @@ get "/delete" do
 end
 
 get "/deals" do
+	projection_startdate = Date.new(
+		(params[:projection_start_year] || Date.today.year).to_i,
+		(params[:projection_start_month] || Date.today.month).to_i
+	)
+	projection_enddate = (projection_startdate >> (params[:projection_month_range] || 1).to_i)
 	filter = (params[:filter] || '')
+	where = [
+		"closedate >= ? and projection_enddate < ?",
+		projection_startdate.strftime("%s").to_i * 1000,
+		projection_enddate.strftime("%s").to_i * 1000
+	]
 	begin
-		json({success: true, deals: Deal.where(filter).order(closedate: :desc).first(20)})
+		json({
+			success: true, deals: Deal.where(where)
+		})
 	rescue Exception => error
 		json({success: false, message: error.message})
 	end
