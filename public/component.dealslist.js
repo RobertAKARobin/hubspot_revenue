@@ -23,6 +23,20 @@ Component.DealsList = (function(){
 			models.isLoading = false;
 		});
 	}
+	triggers.sortOn = function(propertyName){
+		return function(event){
+			models.sortDirection = (models.sortDirection == 'asc' ? 'desc' : 'asc');
+			models.list.sort(function(a, b){
+				a = a[propertyName].toString().replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+				b = b[propertyName].toString().replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+				if(models.sortDirection == 'asc'){
+					return(a > b ? 1 : -1)
+				}else{
+					return(a < b ? 1 : -1)
+				}
+			});
+		}
+	}
 
 	var events = {};
 	events.loadDeals = function(event){
@@ -57,6 +71,7 @@ Component.DealsList = (function(){
 	var models = {};
 	models.list = [];
 	models.isLoading = false;
+	models.sortDirection = 'asc';
 	models.filter = m.stream(helpers.query().filter);
 	models.server_response = '';
 	models.projection_start_month = m.stream((new Date()).getMonth() + 1);
@@ -101,11 +116,11 @@ Component.DealsList = (function(){
 	views.headerRow = function(){
 		return m('tr', [
 			m('th', ''),
-			m('th', 'Created'),
-			m('th', 'Name'),
-			m('th', 'Probability'),
-			m('th', 'Amount'),
-			m('th', 'Close date'),
+			m('th', {onclick: triggers.sortOn('createdate')}, 'Created'),
+			m('th', {onclick: triggers.sortOn('dealname')}, 'Name'),
+			m('th', {onclick: triggers.sortOn('probability_')}, 'Probability'),
+			m('th', {onclick: triggers.sortOn('amount')}, 'Amount'),
+			m('th', {onclick: triggers.sortOn('closedate')}, 'Close date'),
 			m('th', 'Timeline'),
 			m('th', 'Timeline end')
 		]);
