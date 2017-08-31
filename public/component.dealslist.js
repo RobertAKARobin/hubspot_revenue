@@ -73,6 +73,14 @@ var DealsList = (function(){
 			}, (models.filter.response ? 'Your input was bad. Try again.' : ''))
 		]
 	}
+	views.projection_segment = function(segment){
+		return m('td', [
+			m('input', {
+				value: segment.raw
+			}),
+			m('p', '$' + segment.dollars),
+		])
+	}
 	views.list = function(){
 		return m('table', [
 			m('tr', [
@@ -83,9 +91,7 @@ var DealsList = (function(){
 				m('th', 'Name'),
 				m('th', 'Probability'),
 				m('th', 'Amount'),
-				m('th', 'Close date'),
-				m('th', 'Months'),
-				m('th', 'Timeline')
+				m('th', 'Close date')
 			]),
 			models.list.map(function(deal, index){
 				return m('tr', [
@@ -97,13 +103,7 @@ var DealsList = (function(){
 					m('td', deal.probability_),
 					m('td', '$' + parseFloat(deal.amount).toFixed(2)),
 					m('td', helpers.date(deal.closedate)),
-					m('td', deal.projection_months),
-					m('td', [
-						m('input', {
-							value: deal.timeline,
-							onchange: events.updateTimeline.bind(deal)
-						})
-					])
+					deal.projection.map(views.projection_segment)
 				]);
 			})
 		]);

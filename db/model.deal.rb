@@ -77,9 +77,19 @@ class Deal < ActiveRecord::Base
 	def projection
 		chunks = (self.read_attribute(:timeline) || "").scan(@@timeline_parser)
 		chunks.map do |chunk|
+			unit = chunk[0]
+			amount = chunk[1..-1].to_f
+			case unit
+			when "$"
+				dollars = amount
+			when "%"
+				dollars = ((amount / 100) * self.amount)
+			end
 			{
-				unit: chunk[0],
-				amount: chunk[1..-1]
+				unit: unit,
+				raw: chunk,
+				amount: amount,
+				dollars: dollars
 			}
 		end
 	end
