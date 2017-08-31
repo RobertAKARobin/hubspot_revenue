@@ -20,26 +20,29 @@ Component.DealsList = (function(){
 			models.isLoading = false;
 		});
 	}
-	triggers.sortOn = function(propertyName){
-		return function(event){
-			models.sortDirection = (models.sortDirection == 'asc' ? 'desc' : 'asc');
-			models.list.sort(function(a, b){
-				a = a[propertyName].toString().replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
-				b = b[propertyName].toString().replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
-				if(models.sortDirection == 'asc'){
-					return(a > b ? 1 : -1)
-				}else{
-					return(a < b ? 1 : -1)
-				}
-			});
-		}
-	}
 
 	var events = {};
 	events.loadDeals = function(event){
 		event.redraw = false;
 		helpers.query(models.filter);
 		triggers.loadDeals();
+	}
+	events.sort = function(propertyName){
+		models.sortProperty = propertyName;
+		models.sortDirection = (models.sortDirection == 'asc' ? 'desc' : 'asc');
+		models.list.sort(function(a, b){
+			var valA = (parseFloat(a[propertyName]) || a[propertyName]);
+			var valB = (parseFloat(b[propertyName]) || b[propertyName]);
+			if(isNaN(valA) || isNaN(valB)){
+				valA = a[propertyName].toString().replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+				valB = b[propertyName].toString().replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+			}
+			if(models.sortDirection == 'asc'){
+				return(valA > valB ? 1 : -1)
+			}else{
+				return(valA < valB ? 1 : -1)
+			}
+		});
 	}
 	events.updateTimeline = function(event){
 		var deal = this;
@@ -68,6 +71,7 @@ Component.DealsList = (function(){
 	var models = {};
 	models.list = [];
 	models.isLoading = false;
+	models.sortProperty = '';
 	models.sortDirection = 'asc';
 	models.server_response = '';
 	models.filter = {
@@ -111,14 +115,21 @@ Component.DealsList = (function(){
 			}, (models.server_response ? 'Your input was bad. Try again.' : ''))
 		]
 	}
+	views.sortable = function(propertyName){
+		return {
+			sort_property: propertyName,
+			sorting: (propertyName == models.sortProperty ? models.sortDirection : ''),
+			onclick: m.withAttr('sort_property', events.sort),
+		}
+	}
 	views.headerRow = function(){
 		return m('tr', [
 			m('th', ''),
-			m('th', {onclick: triggers.sortOn('createdate')}, 'Created'),
-			m('th', {onclick: triggers.sortOn('dealname')}, 'Name'),
-			m('th', {onclick: triggers.sortOn('probability_')}, 'Probability'),
-			m('th', {onclick: triggers.sortOn('amount')}, 'Amount'),
-			m('th', {onclick: triggers.sortOn('closedate')}, 'Close date'),
+			m('th', views.sortable('createdate'), 'Created'),
+			m('th', views.sortable('dealname'), 'Name'),
+			m('th', views.sortable('probability_'), 'Probability'),
+			m('th', views.sortable('amount'), 'Amount'),
+			m('th', views.sortable('closedate'), 'Close date'),
 			m('th', 'Timeline'),
 			m('th', 'Timeline end')
 		]);
