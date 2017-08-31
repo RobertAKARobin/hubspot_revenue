@@ -4,6 +4,7 @@ require "sinatra/reloader" if development?
 require "sinatra/json"
 require "date"
 require "active_support/time"
+require "pry"
 
 require "./db/connection"
 require "./db/model.deal"
@@ -18,6 +19,11 @@ after do
 	ActiveRecord::Base.connection.close
 end
 
+get "/pry" do
+	binding.pry
+	"poot"
+end
+
 get "/" do
 	redirect "/index.html"
 end
@@ -30,23 +36,23 @@ end
 
 get "/deals" do
 	filter = (params[:filter] || {})
-	projection_startdate = Date.new(
-		(filter[:projection_start_year] || Date.today.year).to_i,
-		(filter[:projection_start_month] || Date.today.month).to_i
-	)
-	projection_enddate = projection_startdate.advance(months: (filter[:projection_month_range] || 1).to_i)
+
+	filter[:projection_start_year] ||= Date.today.year
+	filter[:projection_start_month] ||= Date.today.month
+	filter[:projection_month_range] ||= 1
+	projection_startdate = Date.new(filter[:projection_start_year].to_i, filter[:projection_start_month].to_i + 1)
+	projection_enddate = projection_startdate.advance(months: filter[:projection_month_range].to_i)
+	filter[:projection_startdate] = projection_startdate.strftime("%s").to_i * 1000
+	filter[:projection_enddate] = projection_enddate.strftime("%s").to_i * 1000
+
 	probability_range = [(filter[:probability_low] || 50).to_i, (filter[:probability_high] || 100).to_i].sort
-	where_string = "closedate >= :projection_startdate and projection_enddate < :projection_enddate and probability_ >= :probability_low and probability_ <= :probability_high"
-	where_vars = {
-		projection_startdate: projection_startdate.strftime("%s").to_i * 1000,
-		projection_enddate: projection_enddate.strftime("%s").to_i * 1000,
-		probability_low: probability_range[0],
-		probability_high: probability_range[1]
-	}
+	filter[:probability_low] = probability_range[0]
+	filter[:probability_high] = probability_range[1]
+
+	sql = ("SELECT * FROM deals WHERE ((#{filter[:projection_startdate]} BETWEEN closedate AND projection_enddate) OR (#{filter[:projection_enddate]} BETWEEN closedate AND projection_enddate)) AND (probability_ BETWEEN #{filter[:probability_low]} AND #{filter[:probability_high]}) ORDER BY probability_ desc")
+	deals = Deal.find_by_sql(sql)
 	begin
-		json({
-			success: true, query: where_vars, deals: Deal.where(where_string, where_vars)
-		})
+		json({success: true, filter: filter, sql: sql, deals: deals})
 	rescue Exception => error
 		json({success: false, message: error.message})
 	end

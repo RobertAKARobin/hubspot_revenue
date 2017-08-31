@@ -96,8 +96,9 @@ class Deal < ActiveRecord::Base
 	end
 
 	def calculate_projection_enddate
-		closedate = Time.at(self.closedate / 1000).to_date
-		self.projection_enddate = closedate.advance(months: projection.size || 0).strftime("%s").to_f * 1000
+		startdate = Time.at(self.closedate / 1000).to_date
+		enddate = startdate.advance(months: [projection.size, 1].max)
+		return (enddate.strftime("%s").to_i * 1000)
 	end
 
 end

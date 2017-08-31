@@ -101,7 +101,7 @@ Component.DealsList = (function(){
 				m('span', ' and out '),
 				m('input', m._boundInput(models.filter.projection_month_range, {
 					type: 'number',
-					min: 1,
+					min: 0,
 					max: 12
 				})),
 				m('span', ' months')
