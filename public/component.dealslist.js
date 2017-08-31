@@ -39,8 +39,10 @@ var DealsList = (function(){
 			if(response.success){
 				deal.timeline = newTimeline;
 				event.target.classList.add('success');
+				event.target.removeAttribute('title');
 			}else{
 				event.target.classList.add('error');
+				event.target.setAttribute('title', response.message);
 			}
 			m.redraw();
 		});

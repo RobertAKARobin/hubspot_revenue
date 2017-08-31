@@ -42,8 +42,8 @@ patch "/deals/:dealId" do
 		data = JSON.parse(request.body.read)
 		deal.update(timeline: data["timeline"])
 		json({success: true, deal: deal})
-	rescue
-		json({success: false})
+	rescue Exception => error
+		json({success: false, message: error})
 	end
 end
 

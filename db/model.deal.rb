@@ -5,6 +5,12 @@ class Deal < ActiveRecord::Base
 	@@mapping = nil
 	self.primary_key = "dealId"
 	has_many :revchunks
+
+	after_save do
+		if (self.closedate_changed? || self.timeline_changed? || self.amount_changed?) && validate_timeline
+			update_rev_chunks
+		end
+	end
 	
 	def self.mapping
 		unless @@mapping
@@ -61,6 +67,19 @@ class Deal < ActiveRecord::Base
 			end
 		end
 		return results
+	end
+
+	def update_rev_chunks(chunks)
+		puts chunks.join(" ") * 5
+	end
+
+	def validate_timeline
+		chunks = self.timeline.scan(/[\$%]\d+\.?\d{0,2}*/)
+		if chunks.any?
+			update_rev_chunks(chunks)
+		else
+			return false
+		end
 	end
 
 end
