@@ -1,3 +1,5 @@
+'use strict';
+
 var DealsList = (function(){
 
 	var triggers = {};

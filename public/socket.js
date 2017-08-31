@@ -1,3 +1,5 @@
+'use strict';
+
 var Socket = (function(){
 	
 	var $Class = {};

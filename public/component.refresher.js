@@ -1,3 +1,5 @@
+'use strict';
+
 var Refresher = (function(){
 
 	var socket = Socket.new();
