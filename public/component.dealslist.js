@@ -1,6 +1,6 @@
 'use strict';
 
-var DealsList = (function(){
+Component.DealsList = (function(){
 
 	var triggers = {};
 	triggers.loadDeals = function(){
@@ -24,6 +24,7 @@ var DealsList = (function(){
 	var events = {};
 	events.loadDeals = function(event){
 		event.redraw = false;
+		helpers.query({filter: models.filter.input()})
 		triggers.loadDeals();
 	}
 	events.updateTimeline = function(event){
@@ -54,7 +55,7 @@ var DealsList = (function(){
 	models.list = [];
 	models.isLoading = false;
 	models.filter = {
-		input: m.stream('closedate >= 1519884000000 AND amount > 159000'),
+		input: m.stream(helpers.query().filter),
 		response: ''
 	}
 

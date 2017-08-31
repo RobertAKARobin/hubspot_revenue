@@ -1,6 +1,6 @@
 'use strict';
 
-var Refresher = (function(){
+Component.Refresher = (function(){
 
 	var socket = Socket.new();
 	socket.onstart = function(){
@@ -20,7 +20,7 @@ var Refresher = (function(){
 	socket.onclose = function(){
 		models.loading.inProgress = false;
 		if(!socket.hasErrors){
-			DealsList.triggers.loadDeals();
+			Component.DealsList.triggers.loadDeals();
 		}
 		m.redraw();
 	}
