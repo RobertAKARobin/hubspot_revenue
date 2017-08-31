@@ -85,7 +85,9 @@ Component.DealsList = (function(){
 			m('th', 'Name'),
 			m('th', 'Probability'),
 			m('th', 'Amount'),
-			m('th', 'Close date')
+			m('th', 'Close date'),
+			m('th', 'Timeline'),
+			m('th', 'Timeline end')
 		]);
 	}
 	views.bodyRow = function(deal, index){
@@ -98,6 +100,13 @@ Component.DealsList = (function(){
 			m('td', deal.probability_),
 			m('td', '$' + parseFloat(deal.amount).toFixed(2)),
 			m('td', helpers.date(deal.closedate)),
+			m('td', [
+				m('input', {
+					value: deal.timeline,
+					onchange: events.updateTimeline.bind(deal)
+				})
+			]),
+			m('td', helpers.date(deal.projection_enddate)),
 			deal.projection.map(views.projection_segment)
 		]);
 	}

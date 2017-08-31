@@ -8,8 +8,8 @@ class Deal < ActiveRecord::Base
 	has_many :revchunks
 
 	before_save do
-		if self.timeline_changed?
-			self.projection_months = projection.size
+		if self.timeline_changed? || self.closedate_changed?
+			self.projection_enddate = calculate_projection_enddate
 		end
 	end
 
@@ -92,6 +92,11 @@ class Deal < ActiveRecord::Base
 				dollars: dollars
 			}
 		end
+	end
+
+	def calculate_projection_enddate
+		closedate = Time.at(self.closedate / 1000).to_date
+		self.projection_enddate = (closedate >> (projection.size || 0)).strftime("%s").to_f * 1000
 	end
 
 end

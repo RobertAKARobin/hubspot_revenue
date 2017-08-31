@@ -7,14 +7,7 @@ ActiveRecord::Schema.define do
 		Deal.mapping[:all].each do |property|
 			t.send(property[:datatype], property[:apiname])
 		end
-		t.integer "projection_months"
-	end
-
-	create_table "revchunk", force: true do |t|
-		t.bigint "month_unix"
-		t.references "deal", index: true
-		t.integer "amount"
-		t.timestamps
+		t.bigint "projection_enddate"
 	end
 
 	create_table "refreshes", force: true do |t|
