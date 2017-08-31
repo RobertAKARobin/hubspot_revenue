@@ -73,6 +73,31 @@ var DealsList = (function(){
 			}, (models.filter.response ? 'Your input was bad. Try again.' : ''))
 		]
 	}
+	views.headerRow = function(){
+		return m('tr', [
+			m('th', ''),
+			m('th', 'Last modified'),
+			m('th', 'Created'),
+			m('th', 'ID'),
+			m('th', 'Name'),
+			m('th', 'Probability'),
+			m('th', 'Amount'),
+			m('th', 'Close date')
+		]);
+	}
+	views.bodyRow = function(deal, index){
+		return m('tr', [
+			m('th', (index + 1)),
+			m('td', helpers.date(deal.hs_lastmodifieddate)),
+			m('td', helpers.date(deal.createdate)),
+			m('td', deal.dealId),
+			m('td', deal.dealname),
+			m('td', deal.probability_),
+			m('td', '$' + parseFloat(deal.amount).toFixed(2)),
+			m('td', helpers.date(deal.closedate)),
+			deal.projection.map(views.projection_segment)
+		]);
+	}
 	views.projection_segment = function(segment){
 		return m('td', [
 			m('input', {
@@ -83,29 +108,8 @@ var DealsList = (function(){
 	}
 	views.list = function(){
 		return m('table', [
-			m('tr', [
-				m('th', ''),
-				m('th', 'Last modified'),
-				m('th', 'Created'),
-				m('th', 'ID'),
-				m('th', 'Name'),
-				m('th', 'Probability'),
-				m('th', 'Amount'),
-				m('th', 'Close date')
-			]),
-			models.list.map(function(deal, index){
-				return m('tr', [
-					m('th', (index + 1)),
-					m('td', helpers.date(deal.hs_lastmodifieddate)),
-					m('td', helpers.date(deal.createdate)),
-					m('td', deal.dealId),
-					m('td', deal.dealname),
-					m('td', deal.probability_),
-					m('td', '$' + parseFloat(deal.amount).toFixed(2)),
-					m('td', helpers.date(deal.closedate)),
-					deal.projection.map(views.projection_segment)
-				]);
-			})
+			views.headerRow(),
+			models.list.map(views.bodyRow)
 		]);
 	}
 
