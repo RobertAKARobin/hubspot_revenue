@@ -35,14 +35,17 @@ get "/deals" do
 		(filter[:projection_start_month] || Date.today.month).to_i
 	)
 	projection_enddate = projection_startdate.advance(months: (filter[:projection_month_range] || 1).to_i)
-	where = [
-		"closedate >= ? and projection_enddate < ?",
-		projection_startdate.strftime("%s").to_i * 1000,
-		projection_enddate.strftime("%s").to_i * 1000
-	]
+	probability_range = [(filter[:probability_low] || 50).to_i, (filter[:probability_high] || 100).to_i].sort
+	where_string = "closedate >= :projection_startdate and projection_enddate < :projection_enddate and probability_ >= :probability_low and probability_ <= :probability_high"
+	where_vars = {
+		projection_startdate: projection_startdate.strftime("%s").to_i * 1000,
+		projection_enddate: projection_enddate.strftime("%s").to_i * 1000,
+		probability_low: probability_range[0],
+		probability_high: probability_range[1]
+	}
 	begin
 		json({
-			success: true, deals: Deal.where(where)
+			success: true, query: where_vars, deals: Deal.where(where_string, where_vars)
 		})
 	rescue Exception => error
 		json({success: false, message: error.message})

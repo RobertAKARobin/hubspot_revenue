@@ -75,6 +75,8 @@ Component.DealsList = (function(){
 	models.sortDirection = 'asc';
 	models.server_response = '';
 	models.filter = {
+		probability_low: m.stream(helpers.query().probability_low || 50),
+		probability_high: m.stream(helpers.query().probability_high || 100),
 		projection_start_month: m.stream(helpers.query().projection_start_month || (new Date()).getMonth() + 1),
 		projection_start_year: m.stream(helpers.query().projection_start_year || (new Date()).getFullYear()),
 		projection_month_range: m.stream(helpers.query().projection_month_range || 1)
@@ -83,25 +85,41 @@ Component.DealsList = (function(){
 	var views = {};
 	views.filter = function(){
 		var form = [
-			m('span', 'Projections starting '),
-			m('input', m._boundInput(models.filter.projection_start_year, {
-				type: 'number',
-				min: 2010,
-				max: 2030
-			})),
-			m('span', ' - '),
-			m('input', m._boundInput(models.filter.projection_start_month, {
-				type: 'number',
-				min: 1,
-				max: 12
-			})),
-			m('span', ' and out '),
-			m('input', m._boundInput(models.filter.projection_month_range, {
-				type: 'number',
-				min: 1,
-				max: 12
-			})),
-			m('span', ' months')
+			m('p', [
+				m('span', 'Projections starting '),
+				m('input', m._boundInput(models.filter.projection_start_year, {
+					type: 'number',
+					min: 2010,
+					max: 2030
+				})),
+				m('span', ' - '),
+				m('input', m._boundInput(models.filter.projection_start_month, {
+					type: 'number',
+					min: 1,
+					max: 12
+				})),
+				m('span', ' and out '),
+				m('input', m._boundInput(models.filter.projection_month_range, {
+					type: 'number',
+					min: 1,
+					max: 12
+				})),
+				m('span', ' months')
+			]),
+			m('p', [
+				m('span', 'Probability between '),
+				m('input', m._boundInput(models.filter.probability_low, {
+					type: 'number',
+					min: 0,
+					max: 99
+				})),
+				m('span', ' and '),
+				m('input', m._boundInput(models.filter.probability_high, {
+					type: 'number',
+					min: 1,
+					max: 100
+				}))
+			])
 		];
 		if(!(models.isLoading)){
 			form.push(m('button', {
