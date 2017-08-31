@@ -49,6 +49,7 @@ PLATFORMS
 
 DEPENDENCIES
   activerecord
+  activesupport
   dotenv
   httparty
   pg

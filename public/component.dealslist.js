@@ -9,10 +9,7 @@ Component.DealsList = (function(){
 		m.request({
 			url: '/deals',
 			data: {
-				filter: models.filter,
-				projection_start_month: models.projection_start_month,
-				projection_start_year: models.projection_start_year,
-				projection_month_range: models.projection_month_range
+				filter: models.filter
 			}
 		}).then(function(response){
 			if(response.success){
@@ -41,7 +38,7 @@ Component.DealsList = (function(){
 	var events = {};
 	events.loadDeals = function(event){
 		event.redraw = false;
-		helpers.query({filter: models.filter()})
+		helpers.query(models.filter);
 		triggers.loadDeals();
 	}
 	events.updateTimeline = function(event){
@@ -72,29 +69,30 @@ Component.DealsList = (function(){
 	models.list = [];
 	models.isLoading = false;
 	models.sortDirection = 'asc';
-	models.filter = m.stream(helpers.query().filter);
 	models.server_response = '';
-	models.projection_start_month = m.stream((new Date()).getMonth() + 1);
-	models.projection_start_year = m.stream((new Date()).getFullYear());
-	models.projection_month_range = m.stream(1);
+	models.filter = {
+		projection_start_month: m.stream(helpers.query().projection_start_month || (new Date()).getMonth() + 1),
+		projection_start_year: m.stream(helpers.query().projection_start_year || (new Date()).getFullYear()),
+		projection_month_range: m.stream(helpers.query().projection_month_range || 1)
+	}
 
 	var views = {};
 	views.filter = function(){
 		var form = [
 			m('span', 'Projections starting '),
-			m('input', m._boundInput(models.projection_start_year, {
+			m('input', m._boundInput(models.filter.projection_start_year, {
 				type: 'number',
 				min: 2010,
 				max: 2030
 			})),
 			m('span', ' - '),
-			m('input', m._boundInput(models.projection_start_month, {
+			m('input', m._boundInput(models.filter.projection_start_month, {
 				type: 'number',
 				min: 1,
 				max: 12
 			})),
 			m('span', ' and out '),
-			m('input', m._boundInput(models.projection_month_range, {
+			m('input', m._boundInput(models.filter.projection_month_range, {
 				type: 'number',
 				min: 1,
 				max: 12

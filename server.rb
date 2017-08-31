@@ -3,6 +3,7 @@ require "sinatra"
 require "sinatra/reloader" if development?
 require "sinatra/json"
 require "date"
+require "active_support/time"
 
 require "./db/connection"
 require "./db/model.deal"
@@ -28,12 +29,12 @@ get "/delete" do
 end
 
 get "/deals" do
+	filter = (params[:filter] || {})
 	projection_startdate = Date.new(
-		(params[:projection_start_year] || Date.today.year).to_i,
-		(params[:projection_start_month] || Date.today.month).to_i
+		(filter[:projection_start_year] || Date.today.year).to_i,
+		(filter[:projection_start_month] || Date.today.month).to_i
 	)
-	projection_enddate = (projection_startdate >> (params[:projection_month_range] || 1).to_i)
-	filter = (params[:filter] || '')
+	projection_enddate = projection_startdate.advance(months: (filter[:projection_month_range] || 1).to_i)
 	where = [
 		"closedate >= ? and projection_enddate < ?",
 		projection_startdate.strftime("%s").to_i * 1000,
