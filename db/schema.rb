@@ -7,6 +7,7 @@ ActiveRecord::Schema.define do
 		Deal.mapping[:all].each do |property|
 			t.send(property[:datatype], property[:apiname])
 		end
+		t.integer "projection_months"
 	end
 
 	create_table "revchunk", force: true do |t|

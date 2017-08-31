@@ -3,13 +3,18 @@ require "httparty"
 
 class Deal < ActiveRecord::Base
 	@@mapping = nil
+	@@timeline_parser = /[\$%]\d+\.?\d{0,2}*/
 	self.primary_key = "dealId"
 	has_many :revchunks
 
-	after_save do
-		if (self.closedate_changed? || self.timeline_changed? || self.amount_changed?) && validate_timeline
-			update_rev_chunks
+	before_save do
+		if self.timeline_changed?
+			self.projection_months = projection.size
 		end
+	end
+
+	def attributes
+		super.merge(projection: self.projection)
 	end
 	
 	def self.mapping
@@ -69,16 +74,13 @@ class Deal < ActiveRecord::Base
 		return results
 	end
 
-	def update_rev_chunks(chunks)
-		puts chunks.join(" ") * 5
-	end
-
-	def validate_timeline
-		chunks = self.timeline.scan(/[\$%]\d+\.?\d{0,2}*/)
-		if chunks.any?
-			update_rev_chunks(chunks)
-		else
-			return false
+	def projection
+		chunks = (self.read_attribute(:timeline) || "").scan(@@timeline_parser)
+		chunks.map do |chunk|
+			{
+				unit: chunk[0],
+				amount: chunk[1..-1]
+			}
 		end
 	end
 

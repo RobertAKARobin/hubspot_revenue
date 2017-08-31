@@ -84,6 +84,7 @@ var DealsList = (function(){
 				m('th', 'Probability'),
 				m('th', 'Amount'),
 				m('th', 'Close date'),
+				m('th', 'Months'),
 				m('th', 'Timeline')
 			]),
 			models.list.map(function(deal, index){
@@ -96,6 +97,7 @@ var DealsList = (function(){
 					m('td', deal.probability_),
 					m('td', '$' + parseFloat(deal.amount).toFixed(2)),
 					m('td', helpers.date(deal.closedate)),
+					m('td', deal.projection_months),
 					m('td', [
 						m('input', {
 							value: deal.timeline,
