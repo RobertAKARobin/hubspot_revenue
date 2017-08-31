@@ -154,7 +154,7 @@ Component.DealsList = (function(){
 	}
 	views.bodyRow = function(deal, index){
 		return m('tr', [
-			m('th', (index + 1)),
+			m('th', (models.list.length - index)),
 			m('td', helpers.date(deal.createdate)),
 			m('td', deal.dealname),
 			m('td', deal.probability_),
