@@ -43,14 +43,11 @@ Component.Refresher = (function(){
 			var progress = (models.loading.progress ? models.loading.progress + '%' : '');
 			var message = (models.loading.inProgress ? 'Loading...' : (models.loading.error || ''));
 
-			if(models.loading.inProgress){
-				attrs.onclick = null;
-			}else{
-				attrs.href = '#';
-				attrs.onclick = events.refresh;
-			}
 			return m('p', [
-				m('a', attrs, 'Refresh'),
+				m('button', {
+					disabled: (models.loading.inProgress),
+					onclick: (models.loading.inProgress ? null : events.refresh)
+				}, 'Refresh'),
 				m('span', (' ' + progress + ' ' + message))
 			]);
 		}
