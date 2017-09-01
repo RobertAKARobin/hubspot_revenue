@@ -6,7 +6,6 @@ class Deal < ActiveRecord::Base
 	@@mapping = nil
 	@@timeline_parser = /[\$%]\d+\.?\d{0,2}*/
 	self.primary_key = "dealId"
-	has_many :revchunks
 
 	before_save do
 		if self.timeline_changed? || self.closedate_changed?

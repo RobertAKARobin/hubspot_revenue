@@ -9,7 +9,6 @@ require "pry"
 require "./db/connection"
 require "./db/model.deal"
 require "./db/model.refresh"
-require "./db/model.revchunk"
 
 configure :development do |config|
 	config.also_reload "./db/model.*.rb"
@@ -17,11 +16,6 @@ end
 
 after do
 	ActiveRecord::Base.connection.close
-end
-
-get "/pry" do
-	binding.pry
-	"poot"
 end
 
 get "/" do
